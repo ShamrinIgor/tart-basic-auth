@@ -11,11 +11,14 @@ class WWWAuthenticate {
   init(rawHeaderValue: String) throws {
     let splits = rawHeaderValue.split(separator: " ", maxSplits: 1)
 
-    if splits.count == 2 {
-      scheme = String(splits[0])
-    } else {
-      throw RegistryError.MalformedHeader(why: "WWW-Authenticate header should consist of two parts: "
-        + "scheme and directives")
+    guard !splits.isEmpty else {
+      throw RegistryError.MalformedHeader(why: "WWW-Authenticate header is empty")
+    }
+
+    scheme = String(splits[0])
+
+    guard splits.count == 2 else {
+      return
     }
 
     let rawDirectives = contextAwareCommaSplit(rawDirectives: String(splits[1]))
